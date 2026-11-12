@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASHISH GAMING</title>
+<style>
+:root{--bg:#080b14;--panel:#111827;--panel2:#172235;--text:#f4f7ff;--muted:#9eabc2;--cyan:#42e8ff;--purple:#9b6cff;--pink:#ff4fa3;--line:#26344b}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% 0%,#19254a 0,transparent 35%),radial-gradient(circle at 90% 15%,#29143e 0,transparent 30%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+header{padding:24px clamp(18px,5vw,64px) 18px;border-bottom:1px solid #ffffff14;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:1.5px;font-size:clamp(23px,4vw,34px)}.brand span{color:var(--cyan);text-shadow:0 0 18px #42e8ff66}
+.tag{color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase}
+main{max-width:1180px;margin:auto;padding:28px clamp(16px,4vw,42px) 50px}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;margin:8px 0 26px}
+h1{font-size:clamp(28px,5vw,46px);margin:0 0 8px}.hero p{color:var(--muted);margin:0;line-height:1.5}
+.pill{border:1px solid #42e8ff55;color:var(--cyan);padding:10px 14px;border-radius:999px;font-size:13px;background:#42e8ff0d}
+.games{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.game-card,.play-area{background:linear-gradient(145deg,#172238,#0f1726);border:1px solid var(--line);border-radius:18px;box-shadow:0 14px 40px #0003}
+.game-card{padding:18px;cursor:pointer;transition:.2s;min-height:155px}.game-card:hover,.game-card.active{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 0 0 1px #42e8ff22,0 15px 35px #0005}
+.game-card .emoji{font-size:30px}.game-card h3{margin:12px 0 5px}.game-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+.play-area{padding:clamp(16px,3vw,26px);min-height:420px}
+.game-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.game-head h2{margin:0;font-size:23px}.hint{color:var(--muted);font-size:13px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 15px;color:#07111b;background:linear-gradient(90deg,var(--cyan),#8bf5ff);font-weight:800}
+button.secondary{background:#26344b;color:var(--text);border:1px solid #40516c}
+button:focus-visible,.game-card:focus-visible{outline:2px solid white;outline-offset:3px}
+canvas{display:block;max-width:100%;margin:10px auto;background:#080f1d;border:1px solid #34435c;border-radius:12px}
+.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:12px}
+.status{text-align:center;color:var(--cyan);font-weight:700;margin:12px 0 4px;min-height:22px}
+.ttt{display:grid;grid-template-columns:repeat(3,minmax(75px,105px));gap:9px;justify-content:center;margin:22px auto}
+.cell{height:95px;font-size:38px;background:#1a2940;color:white;border:1px solid #40516c;border-radius:12px}
+.cell:hover{background:#253957}
+.score{display:flex;justify-content:center;gap:22px;color:var(--muted);margin:12px}
+.score strong{color:var(--text)}
+.hidden{display:none!important}
+footer{text-align:center;color:#72819b;font-size:12px;padding:22px}
+@media(max-width:760px){.games{grid-template-columns:1fr}.game-card{min-height:unset}.play-area{min-height:400px}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">ASHISH <span>GAMING</span></div><div class="tag">Play • Challenge • Level Up</div></div>
+  <div class="pill">★ YOUR MINI GAME HUB</div>
+</header>
+<main>
+  <section class="hero">
+    <div><h1>Choose your game.</h1><p>Three mini-games. One gaming zone. Pick a game below and start playing!</p></div>
+    <div class="pill">LAPTOP MODE · KEYBOARD READY</div>
+  </section>
+  <section class="games" aria-label="Choose a game">
+    <article class="game-card active" tabindex="0" data-game="race"><div class="emoji">🏎️</div><h3>Car Racing</h3><p>Dodge the traffic and see how long you can survive.</p></article>
+    <article class="game-card" tabindex="0" data-game="snake"><div class="emoji">🐍</div><h3>Snake Game</h3><p>Eat the glowing food, grow longer and beat your score.</p></article>
+    <article class="game-card" tabindex="0" data-game="ttt"><div class="emoji">⭕</div><h3>Tic Tac Toe</h3><p>Play X versus O on the classic 3 × 3 board.</p></article>
+  </section>
+
+  <section class="play-area">
+    <div id="race">
+      <div class="game-head"><div><h2>🏎️ Car Racing</h2><div class="hint">Move with ← → or A / D. Avoid the other cars.</div></div><button id="raceStart">Start / Restart</button></div>
+      <canvas id="raceCanvas" width="520" height="310" aria-label="Car racing game"></canvas>
+      <div class="status" id="raceStatus">Press Start to begin racing.</div>
+      <div class="controls"><button class="secondary" id="leftBtn">← Left</button><button class="secondary" id="rightBtn">Right →</button></div>
+    </div>
+
+    <div id="snake" class="hidden">
+      <div class="game-head"><div><h2>🐍 Snake Game</h2><div class="hint">Use arrow keys to guide the snake. Don't hit the wall or yourself.</div></div><button id="snakeStart">Start / Restart</button></div>
+      <canvas id="snakeCanvas" width="400" height="400" aria-label="Snake game"></canvas>
+      <div class="status" id="snakeStatus">Press Start to play. Eat the red food!</div>
+      <div class="score">Score: <strong id="snakeScore">0</strong></div>
+    </div>
+
+    <div id="ttt" class="hidden">
+      <div class="game-head"><div><h2>⭕ Tic Tac Toe</h2><div class="hint">Take turns. Get three in a row to win.</div></div><button id="tttReset">New Game</button></div>
+      <div class="score"><span>❎ X: <strong id="xScore">0</strong></span><span>⭕ O: <strong id="oScore">0</strong></span><span>Draws: <strong id="drawScore">0</strong></span></div>
+      <div class="ttt" id="board" aria-label="Tic Tac Toe board">
+        <button class="cell" data-i="0" aria-label="Square 1"></button><button class="cell" data-i="1" aria-label="Square 2"></button><button class="cell" data-i="2" aria-label="Square 3"></button>
+        <button class="cell" data-i="3" aria-label="Square 4"></button><button class="cell" data-i="4" aria-label="Square 5"></button><button class="cell" data-i="5" aria-label="Square 6"></button>
+        <button class="cell" data-i="6" aria-label="Square 7"></button><button class="cell" data-i="7" aria-label="Square 8"></button><button class="cell" data-i="8" aria-label="Square 9"></button>
+      </div>
+      <div class="status" id="tttStatus">X goes first. Good luck!</div>
+    </div>
+  </section>
+</main>
+<footer>ASHISH GAMING · Built to play in your browser</footer>
+<script>
+// Game navigation
+const cards=[...document.querySelectorAll('.game-card')];
+const panels={race:document.getElementById('race'),snake:document.getElementById('snake'),ttt:document.getElementById('ttt')};
+function showGame(name){cards.forEach(c=>c.classList.toggle('active',c.dataset.game===name));Object.entries(panels).forEach(([k,p])=>p.classList.toggle('hidden',k!==name));}
+cards.forEach(c=>{c.addEventListener('click',()=>showGame(c.dataset.game));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showGame(c.dataset.game)}})});
+
+// Car racing
+const rc=document.getElementById('raceCanvas'), rctx=rc.getContext('2d');
+let carX=rc.width/2, traffic=[], raceOn=false, raceFrame=0, raceScore=0, raceLoop=null, steer=0;
+function resetRace(){carX=rc.width/2;traffic=[];raceFrame=0;raceScore=0;raceOn=true;document.getElementById('raceStatus').textContent='Race on! Dodge the traffic.';if(raceLoop)cancelAnimationFrame(raceLoop);drawRace();raceLoop=requestAnimationFrame(raceTick)}
+function drawRace(){
+ rctx.clearRect(0,0,rc.width,rc.height);rctx.fillStyle='#152b29';rctx.fillRect(0,0,rc.width,rc.height);
+ const roadX=110,roadW=300;rctx.fillStyle='#303846';rctx.fillRect(roadX,0,roadW,rc.height);
+ rctx.fillStyle='#f8d76a';rctx.fillRect(roadX+8,0,5,rc.height);rctx.fillRect(roadX+roadW-13,0,5,rc.height);
+ rctx.strokeStyle='#d7e0ea';rctx.lineWidth=4;rctx.setLineDash([22,18]);rctx.lineDashOffset=-(raceFrame*4)%40;
+ [roadX+100,roadX+200].forEach(x=>{rctx.beginPath();rctx.moveTo(x,0);rctx.lineTo(x,rc.height);rctx.stroke()});rctx.setLineDash([]);
+ traffic.forEach(t=>drawCar(t.x,t.y,'#ff5577'));
+ drawCar(carX,rc.height-66,'#42e8ff');
+ rctx.fillStyle='#fff';rctx.font='bold 16px Arial';rctx.fillText('SCORE: '+raceScore,18,27);
+}
+function drawCar(x,y,color){rctx.fillStyle=color;rctx.fillRect(x-16,y-25,32,50);rctx.fillStyle='#172235';rctx.fillRect(x-11,y-16,22,13);rctx.fillRect(x-11,y+5,22,10);rctx.fillStyle='#0a0d13';rctx.fillRect(x-19,y-18,4,12);rctx.fillRect(x+15,y-18,4,12);rctx.fillRect(x-19,y+10,4,12);rctx.fillRect(x+15,y+10,4,12)}
+function raceTick(){if(!raceOn)return;raceFrame++;if(raceFrame%48===0)traffic.push({x:125+Math.floor(Math.random()*3)*100,y:-35});traffic.forEach(t=>t.y+=3.5+Math.min(raceScore/180,4));traffic=traffic.filter(t=>t.y<rc.height+40);carX+=steer*5;carX=Math.max(130,Math.min(390,carX));for(const t of traffic){if(Math.abs(t.x-carX)<29&&Math.abs(t.y-(rc.height-41))<42){raceOn=false;document.getElementById('raceStatus').textContent='Crash! Final score: '+raceScore+'. Press Start to try again.';drawRace();return}}if(raceFrame%6===0)raceScore++;drawRace();raceLoop=requestAnimationFrame(raceTick)}
+document.getElementById('raceStart').onclick=resetRace;
+document.getElementById('leftBtn').onpointerdown=()=>steer=-1;document.getElementById('rightBtn').onpointerdown=()=>steer=1;
+['leftBtn','rightBtn'].forEach(id=>{const b=document.getElementById(id);b.onpointerup=b.onpointerleave=()=>steer=0});
+window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){steer=-1;e.preventDefault()}if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){steer=1;e.preventDefault()}});
+window.addEventListener('keyup',e=>{if(['ArrowLeft','ArrowRight','a','d','A','D'].includes(e.key))steer=0});
+drawRace();
+
+// Snake game
+const sc=document.getElementById('snakeCanvas'),sctx=sc.getContext('2d'),cell=20,grid=20;
+let snake=[],food={x:10,y:10},dir={x:1,y:0},nextDir={x:1,y:0},snakeTimer=null,snakeAlive=false,sScore=0;
+function placeFood(){do{food={x:Math.floor(Math.random()*grid),y:Math.floor(Math.random()*grid)}}while(snake.some(p=>p.x===food.x&&p.y===food.y))}
+function drawSnake(){sctx.fillStyle='#091323';sctx.fillRect(0,0,400,400);sctx.strokeStyle='#17263b';for(let i=0;i<=grid;i++){sctx.beginPath();sctx.moveTo(i*cell,0);sctx.lineTo(i*cell,400);sctx.stroke();sctx.beginPath();sctx.moveTo(0,i*cell);sctx.lineTo(400,i*cell);sctx.stroke()}sctx.fillStyle='#ff5577';sctx.beginPath();sctx.arc(food.x*cell+10,food.y*cell+10,8,0,Math.PI*2);sctx.fill();snake.forEach((p,i)=>{sctx.fillStyle=i===0?'#42e8ff':'#37b985';sctx.fillRect(p.x*cell+1,p.y*cell+1,18,18)})}
+function startSnake(){clearInterval(snakeTimer);snake=[{x:5,y:10},{x:4,y:10},{x:3,y:10}];dir={x:1,y:0};nextDir={x:1,y:0};sScore=0;snakeAlive=true;document.getElementById('snakeScore').textContent='0';document.getElementById('snakeStatus').textContent='Go! Use the arrow keys.';placeFood();drawSnake();snakeTimer=setInterval(stepSnake,115)}
+function stepSnake(){if(!snakeAlive)return;dir=nextDir;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(head.x<0||head.y<0||head.x>=grid||head.y>=grid||snake.some(p=>p.x===head.x&&p.y===head.y)){snakeAlive=false;clearInterval(snakeTimer);document.getElementById('snakeStatus').textContent='Game over! Final score: '+sScore+'. Press Start to play again.';return}snake.unshift(head);if(head.x===food.x&&head.y===food.y){sScore+=10;document.getElementById('snakeScore').textContent=sScore;placeFood()}else snake.pop();drawSnake()}
+window.addEventListener('keydown',e=>{const map={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};const nd=map[e.key];if(nd&&snakeAlive){e.preventDefault();if(nd.x!==-dir.x||nd.y!==-dir.y)nextDir=nd}});
+document.getElementById('snakeStart').onclick=startSnake;drawSnake();
+
+// Tic Tac Toe
+let cells=Array(9).fill(''),turn='X',ended=false,xs=0,os=0,ds=0;
+const winLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const cellBtns=[...document.querySelectorAll('.cell')];
+function renderTTT(){cellBtns.forEach((b,i)=>{b.textContent=cells[i];b.style.color=cells[i]==='X'?'#42e8ff':'#ff78bd';b.disabled=!!cells[i]||ended});document.getElementById('xScore').textContent=xs;document.getElementById('oScore').textContent=os;document.getElementById('drawScore').textContent=ds}
+function resetTTT(){cells=Array(9).fill('');turn='X';ended=false;document.getElementById('tttStatus').textContent='X goes first. Good luck!';renderTTT()}
+function playTTT(i){if(ended||cells[i])return;cells[i]=turn;const win=winLines.find(line=>line.every(n=>cells[n]===turn));if(win){ended=true;if(turn==='X')xs++;else os++;document.getElementById('tttStatus').textContent=turn+' wins! Start a new game to play again.'}else if(cells.every(Boolean)){ended=true;ds++;document.getElementById('tttStatus').textContent="It's a draw! Start a new game."}else{turn=turn==='X'?'O':'X';document.getElementById('tttStatus').textContent=turn+"'s turn."}renderTTT()}
+cellBtns.forEach((b,i)=>b.addEventListener('click',()=>playTTT(i)));document.getElementById('tttReset').onclick=resetTTT;renderTTT();
+</script>
+</body>
+</html>
